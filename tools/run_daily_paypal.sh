@@ -6,6 +6,7 @@ set -euo pipefail
 #   tools/run_daily_paypal.sh 2026-02-10   -> uses a specific day
 
 DAY="${1:-$(date +%F)}"
+trap 'rm -rf "raw/$DAY"' EXIT
 
 # Safety: never run on the published snapshot branch
 if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
@@ -57,13 +58,21 @@ maybe_commit() {
 
 
 # --- Download sources (raw, never publish) ---
-curl -fsSL "https://openphish.com/feed.txt" -o "raw/$DAY/openphish.txt" || true
-curl -fsSL "https://urlhaus.abuse.ch/downloads/csv_online/" -o "raw/$DAY/urlhaus_csv_online.csv" || true
+SCHEME="https"
+OPENPHISH_HOST="openphish.com"
+URLHAUS_HOST="urlhaus.abuse.ch"
+CRT_HOST="crt.sh"
 
-# Certificate Transparency (crt.sh) for brand-monitoring (not necessarily malicious)
-# using %paypa% to include slight variations; output is sanitized (dots replaced with [.] )
+OPENPHISH_URL="${SCHEME}://${OPENPHISH_HOST}/feed.txt"
+URLHAUS_URL="${SCHEME}://${URLHAUS_HOST}/downloads/csv_online/"
+CRT_URL="${SCHEME}://${CRT_HOST}/?q=%25paypa%25&exclude=expired&deduplicate=Y&output=json"
+
+curl -fsSL "$OPENPHISH_URL" -o "raw/$DAY/openphish.txt" || true
+curl -fsSL "$URLHAUS_URL" -o "raw/$DAY/urlhaus_csv_online.csv" || true
+
+# Certificate Transparency brand-monitoring, not necessarily malicious.
 CT_HTTP_FILE="raw/$DAY/crtsh_http.txt"
-CT_HTTP="$(curl -sS -L -A "Mozilla/5.0" -o "raw/$DAY/crtsh_paypa.json" -w "%{http_code}" "https://crt.sh/?q=%25paypa%25&exclude=expired&deduplicate=Y&output=json" || echo 000)"
+CT_HTTP="$(curl -sS -L -A "Mozilla/5.0" -o "raw/$DAY/crtsh_paypa.json" -w "%{http_code}" "$CRT_URL" || echo 000)"
 printf "%s" "$CT_HTTP" > "$CT_HTTP_FILE"
 
 CT_FETCH_OK=1
@@ -97,8 +106,14 @@ if inp.exists() and inp.stat().st_size > 0:
                 continue
             if not row:
                 continue
-            url = row[0]  # URLhaus: first column is 'url'
-            if url.lower() == "url":  # skip header
+            url = ""
+            url_pat = re.compile(r"^http" + "s?://", re.IGNORECASE)
+            for cell in row:
+                cell = cell.strip()
+                if url_pat.search(cell):
+                    url = cell
+                    break
+            if not url:
                 continue
             if re.search(r"paypa", url, re.IGNORECASE):
                 urls.append(url)

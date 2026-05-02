@@ -1,0 +1,6 @@
+date,indicator_type,indicator_redacted,pattern,channel,likelihood,impact,confidence,notes
+2026-02-01,domain,paypaI[.]support,typosquatting,web,High,High,Medium,Masked domain only; no path.
+2026-02-02,url,hxxps://paypal[.]verify-account[.]tld/...,impersonation page,web,High,High,High,URL redacted; from public advisory.
+2026-02-03,email,service@paypaI[.]tld,spoof-like sender,email,Medium,High,Medium,Do not include headers publicly.
+2026-02-04,social,@paypal_helpdesk__,account impersonation,social,Medium,Medium,Medium,Username masked in public outputs.
+2026-02-05,domain,paypal-secure[.]example,keyword abuse,web,Medium,Medium,Medium,Illustrative example.

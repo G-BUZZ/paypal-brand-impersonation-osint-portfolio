@@ -1,0 +1,18 @@
+# raw inputs (may contain live malicious links)
+raw/
+
+# evidence files (private) - never publish
+evidence/files/
+
+# candidate lists extracted from raw feeds (may contain live links)
+daily/*/candidates_*.txt
+
+# accidental root outputs
+hashes.csv
+
+# archives
+*.zip
+tools/run_daily_paypal.sh.bak.*
+tools/*.bak.*
+portfolio.bundle
+.github/workflows/

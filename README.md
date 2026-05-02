@@ -15,7 +15,7 @@ The project focuses on process quality rather than publishing sensitive indicato
 
 ## Current status
 
-This is a clean public snapshot of the workflow. The included monitoring sample covers a short February 2026 window and deliberately documents days with no findings or no run instead of backfilling results.
+This is a clean public snapshot of the workflow. The current monitoring sample starts in May 2026 and deliberately documents daily results transparently, including zero-result days instead of backfilling or overstating findings.
 
 Current public metrics show no confirmed active indicators in the tracked days. That is acceptable for a defensive monitoring project: the value is in the reproducible workflow, safety controls, and transparent reporting discipline.
 
